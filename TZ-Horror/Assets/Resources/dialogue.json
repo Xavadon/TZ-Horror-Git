@@ -1,0 +1,19 @@
+{
+    "translations": [
+        {
+            "key": "order1",
+            "textsRu": [ "Привет!", "Один эспрессо, без сахара.", "Оплата картой." ],
+            "textsEn": [ "Hi!", "One espresso, no sugar.", "I'll pay by card." ]
+        },
+        {
+            "key": "order2",
+            "textsRu": [ "Доброе утро.", "Капучино с овсяным молоком, пожалуйста.", "Можете сделать погорячее?" ],
+            "textsEn": [ "Good morning.", "A cappuccino with oat milk, please.", "Can you make it hotter?" ]
+        },
+        {
+            "key": "order3",
+            "textsRu": [ "Здравствуй.", "Американо и круассан.", "Сколько с меня?" ],
+            "textsEn": [ "Hello.", "Americano and a croissant.", "How much is it?" ]
+        }
+    ]
+}
