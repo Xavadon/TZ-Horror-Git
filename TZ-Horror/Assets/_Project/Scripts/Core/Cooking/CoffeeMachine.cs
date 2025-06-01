@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class CoffeeMachine : MonoBehaviour
@@ -17,75 +18,73 @@ public class CoffeeMachine : MonoBehaviour
     private Item _capsule;
     private Item _lid;
 
+    public event Action OnPour;
+
     private void Awake()
     {
-        _lidPlacement.gameObject.SetActive(false);
+        _lidPlacement.SetInteractAble(false);
     }
 
     private void OnEnable()
     {
-        _cupPlacement.OnItemPlaced += OnCupPlaced;
-        _capsulePlacement.OnItemPlaced += OnCapsulePlaced;
-        _lidPlacement.OnItemPlaced += OnLidPlaced;
-        _button.OnPress += PressBrewButton;
+        _cupPlacement.OnItemPlaced += HandleCupPlaced;
+        _capsulePlacement.OnItemPlaced += HandleCapsulePlaced;
+        _lidPlacement.OnItemPlaced += HandleLidPlaced;
+        _button.OnPress += HandleBrewButtonPress;
     }
 
     private void OnDisable()
     {
-        _cupPlacement.OnItemPlaced -= OnCupPlaced;
-        _capsulePlacement.OnItemPlaced -= OnCapsulePlaced;
-        _lidPlacement.OnItemPlaced -= OnLidPlaced;
-        _button.OnPress -= PressBrewButton;
+        _cupPlacement.OnItemPlaced -= HandleCupPlaced;
+        _capsulePlacement.OnItemPlaced -= HandleCapsulePlaced;
+        _lidPlacement.OnItemPlaced -= HandleLidPlaced;
+        _button.OnPress -= HandleBrewButtonPress;
     }
 
-    private void OnCupPlaced(Item item)
+    private void HandleCupPlaced(Item item)
     {
         _cup = item;
-        //_cupPlacement.gameObject.SetActive(false);
     }
 
-    private void OnCapsulePlaced(Item item)
+    private void HandleCapsulePlaced(Item item)
     {
         _capsule = item;
-        //_capsulePlacement.gameObject.SetActive(false);
     }
 
-    private void OnLidPlaced(Item item)
+    private void HandleLidPlaced(Item item)
     {
         _lid = item;
-        var coffee = Instantiate(_coffeePrefab, _cupPlacement.transform.position, Quaternion.identity);
+
+        GameObject coffee = Instantiate(_coffeePrefab, _cupPlacement.transform.position, Quaternion.identity);
         coffee.transform.rotation = _cup.transform.rotation;
 
         if (coffee.TryGetComponent(out Rigidbody rigidbody))
-        {
             rigidbody.useGravity = false;
-        }
 
-        Destroy(_cup.gameObject);
-        Destroy(_capsule.gameObject);
-        Destroy(_lid.gameObject);
+        DestroyIfValid(_cup);
+        DestroyIfValid(_capsule);
+        DestroyIfValid(_lid);
 
         _cupPlacement.ResetZone();
         _capsulePlacement.ResetZone();
         _lidPlacement.ResetZone();
 
-        _lidPlacement.gameObject.SetActive(false);
-
+        _lidPlacement.SetInteractAble(false);
         _isReady = false;
     }
 
-    public void PressBrewButton()
+    private void HandleBrewButtonPress()
     {
-        if (_cup == null) return;
-        if (_capsule == null) return;
-        if (_isPouring) return;
-        if (_isReady) return;
+        if (_cup == null || _capsule == null || _isPouring || _isReady)
+            return;
 
-        StartCoroutine(PourCoffee());
+        StartCoroutine(PourRoutine());
     }
 
-    private IEnumerator PourCoffee()
+    private IEnumerator PourRoutine()
     {
+        OnPour?.Invoke();
+
         _isPouring = true;
         _effect.SetActive(true);
 
@@ -94,6 +93,14 @@ public class CoffeeMachine : MonoBehaviour
         _effect.SetActive(false);
         _isPouring = false;
         _isReady = true;
-        _lidPlacement.gameObject.SetActive(true);
+
+        _lidPlacement.ResetZone();
+        _lidPlacement.SetInteractAble(true);
+    }
+
+    private void DestroyIfValid(Item item)
+    {
+        if (item != null && item.gameObject != null)
+            Destroy(item.gameObject);
     }
 }

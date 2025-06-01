@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using QuickOutline;
+using UnityEngine;
 
 public class LightToggle : MonoBehaviour, IInteractable, IOutlinable
 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickOutline;
+using System;
 using UnityEngine;
 
 public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlinable
@@ -6,68 +7,79 @@ public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlina
     [SerializeField] private Outline _outline;
     [SerializeField] private string _dialogueKey = "greeting";
     [SerializeField] private Transform _lookAt;
-
+    
+    private float _cooldownAfterDialogue = 0.75f;
     private bool _interactAble = true;
+    private bool _onCooldown;
     private Collider _collider;
 
     public event Action OnInteract;
 
+    private void Awake()
+    {
+        if (_outline == null)
+            _outline = GetComponent<Outline>();
+
+        _collider = GetComponent<Collider>();
+    }
+
     private void OnEnable()
     {
-        NewDialogueSystem.DialogueSystem.OnDialogueFinished += OnDialogueEnd;
+        NewDialogueSystem.DialogueSystem.OnDialogueFinished += HandleDialogueEnd;
     }
 
     private void OnDisable()
     {
-        NewDialogueSystem.DialogueSystem.OnDialogueFinished -= OnDialogueEnd;
+        NewDialogueSystem.DialogueSystem.OnDialogueFinished -= HandleDialogueEnd;
     }
 
     public void Construct(int dialogueIndex)
     {
-        _collider = GetComponent<Collider>();
-
-        string dialogueKey = $"order{dialogueIndex}";
-        _dialogueKey = dialogueKey;
-        _collider.enabled = false;
-    }
-
-    private void OnDialogueEnd(string obj)
-    {
-        SetInteractAble(true);
-    }
-
-    private void Awake()
-    {
-        if (_outline == null)
-        {
-            _outline = GetComponent<Outline>();
-        }
+        _dialogueKey = $"order{dialogueIndex}";
+        if (_collider != null)
+            _collider.enabled = false;
     }
 
     public void Interact()
     {
-        if (!_interactAble)
-        {
+        if (!_interactAble || _onCooldown)
             return;
-        }
-
-        Debug.Log($"Interaction {gameObject.name}");
 
         if (_lookAt == null)
-        {
             _lookAt = transform;
-        }
 
         NewDialogueSystem.DialogueSystem.StartDialogue(_dialogueKey, _lookAt);
         DisableOutline();
         SetInteractAble(false);
-
         OnInteract?.Invoke();
+    }
+
+    private void HandleDialogueEnd(string _)
+    {
+        StartCooldown();
+    }
+
+    private async void StartCooldown()
+    {
+        _onCooldown = true;
+        await System.Threading.Tasks.Task.Delay((int)(_cooldownAfterDialogue * 1000f));
+        _onCooldown = false;
+        SetInteractAble(true);
+    }
+
+    public void SetInteractAble(bool value)
+    {
+        _interactAble = value;
+
+        if (_collider == null)
+            _collider = GetComponent<Collider>();
+
+        _collider.enabled = value;
     }
 
     public void DisableOutline()
     {
-        if (_interactAble)
+        if (_outline != null)
         {
             _outline.SetOutlineWidth(0);
         }
@@ -83,17 +95,5 @@ public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlina
         {
             DisableOutline();
         }
-    }
-
-    public void SetInteractAble(bool value)
-    {
-        _interactAble = value;
-
-        if (_collider == null)
-        {
-            _collider = GetComponent<Collider>();
-        }
-
-        _collider.enabled = value;
     }
 }

@@ -6,15 +6,17 @@ public class PlayerInteractions : MonoBehaviour
     [SerializeField] private LayerMask _interactionLayer;
 
     private Camera _mainCamera;
+    private ItemManipulator _itemManipulator;
 
-    public void Construct()
+    public void Construct(ItemManipulator itemManipulator)
     {
         _mainCamera = GetComponent<Camera>();
+        _itemManipulator = itemManipulator;
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !_itemManipulator.IsHoldingItem)
         {
             TryInteract();
         }

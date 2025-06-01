@@ -3,7 +3,22 @@ guid: 7e52a2ba54419d84cb77abc70dc9ef70
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: CUP
+    second: {fileID: 2100000, guid: 14d3fff01f173a64bbc61b4f162ed217, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PIPET
+    second: {fileID: 2100000, guid: 5aef21a190b878a4e9296721b3f2140b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TUTUP
+    second: {fileID: 2100000, guid: f3e392699ba11594692f1ff124c423b1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

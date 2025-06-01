@@ -52,7 +52,7 @@ namespace EvolveGames
         private float _savedCameraFOV;
         [SerializeField] private Transform _dialogueFocusTarget;
         [SerializeField] private float _dialogueFOV = 30.0f;
-        [SerializeField] private float _focusDuration = 1.5f;
+        [SerializeField] private float _focusDuration = 0.75f;
         private Coroutine _focusRoutine;
 
         private void OnEnable()

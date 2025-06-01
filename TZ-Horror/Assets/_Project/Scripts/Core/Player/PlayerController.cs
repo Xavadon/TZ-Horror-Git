@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
 
     public void Construct(ItemInfo itemInfo)
     {
-        _playerInteractions.Construct();
+        _playerInteractions.Construct(_itemManipulator);
         _interactionHighlighter.Construct(itemInfo, _itemManipulator);
     }
 }

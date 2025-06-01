@@ -14,13 +14,14 @@ public class ItemPlacementZone : MonoBehaviour
 
     public event Action<Item> OnItemPlaced;
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (_isOccupied || !_interactable)
             return;
 
         if (other.TryGetComponent(out Item item) && item.GetItemType() == _targetType)
         {
+            _interactable = false;
             _isOccupied = true;
             StartCoroutine(SmoothSnapItem(item.gameObject));
             _item = item;
@@ -57,12 +58,13 @@ public class ItemPlacementZone : MonoBehaviour
         itemTransform.rotation = targetRotation;
 
         OnItemPlaced?.Invoke(_item);
-        _item = null;
     }
 
     public void ResetZone()
     {
+        _interactable = true;
         _isOccupied = false;
+        _item = null;
     }
 
     public void SetInteractAble(bool value)

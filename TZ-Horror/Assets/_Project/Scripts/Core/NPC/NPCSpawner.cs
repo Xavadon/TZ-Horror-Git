@@ -6,6 +6,7 @@ using UnityEngine;
 public class NPCSpawner : MonoBehaviour
 {
     [SerializeField] private NPC[] _npcsEditor;
+    [SerializeField] private Transform _playerTransform;
 
     public event Action OnAllCompleted;
 
@@ -33,7 +34,7 @@ public class NPCSpawner : MonoBehaviour
         foreach (NPC npc in _npcsEditor)
         {
             counter++;
-            npc.Construct(counter);
+            npc.Construct(counter, _playerTransform);
             _npcs.Enqueue(npc);
         }
 

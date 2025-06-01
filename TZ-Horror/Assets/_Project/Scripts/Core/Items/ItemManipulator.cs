@@ -11,7 +11,7 @@ public class ItemManipulator : MonoBehaviour
     private Camera _mainCamera;
     private Rigidbody _heldObject;
     private float _throwForce = 500f;
-
+    private Quaternion _heldObjectRotation;
     public bool IsHoldingItem => _heldObject != null;
 
     private void OnEnable()
@@ -74,6 +74,8 @@ public class ItemManipulator : MonoBehaviour
             Vector3 targetPosition = _holdPoint.position;
             _heldObject.transform.position = Vector3.Lerp(_heldObject.transform.position, targetPosition, Time.deltaTime * _moveForce);
         }
+
+        _heldObject.rotation = Quaternion.Slerp(_heldObject.rotation, _heldObjectRotation, Time.deltaTime * _moveForce);
     }
 
     private void TryPickupObject()
@@ -89,6 +91,7 @@ public class ItemManipulator : MonoBehaviour
             _heldObject = rb;
             _heldObject.useGravity = false;
             _heldObject.drag = 10f;
+            _heldObjectRotation = _heldObject.rotation;
         }
     }
 
