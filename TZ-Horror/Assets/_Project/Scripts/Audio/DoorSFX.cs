@@ -41,6 +41,11 @@ public class DoorSFX : MonoBehaviour
     
     private void PlayCloseSoundEffect()
     {
+        if (_closeSFX == null)
+        {
+            return;
+        }
+
         _audioSource.clip = _closeSFX;
         _audioSource.Play();
     }

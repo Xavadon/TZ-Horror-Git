@@ -36,12 +36,12 @@ public class NPCSpawner : MonoBehaviour
             counter++;
             npc.Construct(counter, _playerTransform);
             _npcs.Enqueue(npc);
-        }
 
-        MoveNextNPC();
+            npc.gameObject.SetActive(false);
+        }
     }
 
-    private void MoveNextNPC()
+    public void MoveNextNPC()
     {
         if (_npcs.Count == 0)
         {
@@ -50,6 +50,7 @@ public class NPCSpawner : MonoBehaviour
         }
 
         NPC npc = _npcs.Dequeue();
+        npc.gameObject.SetActive(true);
         npc.Init();
     }
 }

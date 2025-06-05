@@ -15,6 +15,19 @@ public class LightBlink : MonoBehaviour
     private float _timer;
     private bool _isBlinking;
 
+    public void Enable()
+    {
+        _timer = GetNextDelay();
+    }
+
+    public void Disable()
+    {
+        StopAllCoroutines();
+        _lightA.enabled = true;
+        _lightB.enabled = true;
+        _renderer.material = _materials[0];
+    }
+
     private void Start()
     {
         _timer = GetNextDelay();

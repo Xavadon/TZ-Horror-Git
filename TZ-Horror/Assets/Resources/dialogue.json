@@ -1,19 +1,47 @@
 {
-    "translations": [
-        {
-            "key": "order1",
-            "textsRu": [ "Привет!", "Один эспрессо, без сахара.", "Оплата картой." ],
-            "textsEn": [ "Hi!", "One espresso, no sugar.", "I'll pay by card." ]
-        },
-        {
-            "key": "order2",
-            "textsRu": [ "Доброе утро.", "Капучино с овсяным молоком, пожалуйста.", "Можете сделать погорячее?" ],
-            "textsEn": [ "Good morning.", "A cappuccino with oat milk, please.", "Can you make it hotter?" ]
-        },
-        {
-            "key": "order3",
-            "textsRu": [ "Здравствуй.", "Американо и круассан.", "Сколько с меня?" ],
-            "textsEn": [ "Hello.", "Americano and a croissant.", "How much is it?" ]
-        }
-    ]
+  "translations": [
+    {
+      "key": "order1",
+      "textsRu": [ "Привет!", "Один эспрессо, без сахара.", "Оплата картой." ],
+      "textsEn": [ "Hi!", "One espresso, no sugar.", "I'll pay by card." ]
+    },
+    {
+      "key": "order2",
+      "textsRu": [ "Доброе утро.", "Капучино с овсяным молоком, пожалуйста.", "Можете сделать погорячее?" ],
+      "textsEn": [ "Good morning.", "A cappuccino with oat milk, please.", "Can you make it hotter?" ]
+    },
+    {
+      "key": "order3",
+      "textsRu": [ "Здравствуй.", "Американо и круассан.", "Сколько с меня?" ],
+      "textsEn": [ "Hello.", "Americano and a croissant.", "How much is it?" ]
+    },
+    {
+      "key": "phoneCall",
+      "textsRu": [
+        "Том, твой первый рабочий день заканчивается.",
+        "Не забудь прибраться перед закрытием.",
+        "И выключи вывеску, когда уйдёшь.",
+        "Не затягивай, скоро совсем стемнеет."
+      ],
+      "textsEn": [
+        "Tom, your first day is almost over.",
+        "Don’t forget to clean up before closing.",
+        "And turn off the sign when you leave.",
+        "Don’t take too long, it’s getting dark."
+      ]
+    },
+    {
+      "key": "suddenMan",
+      "textsRu": [
+        "...",
+        "Можно... кофе?",
+        "Вы ещё... открыты?"
+      ],
+      "textsEn": [
+        "...",
+        "Can I... get a coffee?",
+        "Are you still... open?"
+      ]
+    }
+  ]
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Animations.Rigging;
 
 public class NPC : MonoBehaviour
 {
@@ -13,21 +14,42 @@ public class NPC : MonoBehaviour
     [SerializeField] private AnimationController _animationController;
     [SerializeField] private ItemPlacementZone _itemPlacementZone;
     [SerializeField] private InteractabeDialogueTrigger _dialogueTrigger;
+    [SerializeField] private Rig _rig;
 
     private StateMachine _stateMachine;
     private int _currentPointIndex;
     private bool _completed;
 
+    public event Action OnReach;
+    public event Action OnGetItem;
     public event Action OnComplete;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out InteractableDoor door))
+        {
+            door.InteractNPC();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.TryGetComponent(out InteractableDoor door))
+        {
+            door.InteractNPC();
+        }
+    }
 
     private void OnEnable()
     {
+        _itemPlacementZone.OnItemStartPlacing += HandleItemStartPlacing;
         _itemPlacementZone.OnItemPlaced += HandleItemPlaced;
         _dialogueTrigger.OnInteract += EnableItemPlacement;
     }
 
     private void OnDisable()
     {
+        _itemPlacementZone.OnItemStartPlacing -= HandleItemStartPlacing;
         _itemPlacementZone.OnItemPlaced -= HandleItemPlaced;
         _dialogueTrigger.OnInteract -= EnableItemPlacement;
     }
@@ -38,9 +60,10 @@ public class NPC : MonoBehaviour
 
         _dialogueTrigger.Construct(dialogueIndex);
 
+        _rig.weight = 0;
         _stateMachine = new StateMachine();
         _stateMachine.AddState("WalkPath", new WalkPathState(this, _agent, _pathPoints, _stateMachine));
-        _stateMachine.AddState("Wait", new WaitState(_dialogueTrigger, transform));
+        _stateMachine.AddState("Wait", new WaitState(_dialogueTrigger, transform, _rig));
         _stateMachine.AddState("Leave", new LeaveState(this, _agent, _moveOutTo));
     }
 
@@ -67,13 +90,19 @@ public class NPC : MonoBehaviour
         _itemPlacementZone.SetInteractAble(true);
     }
 
+
+    private void HandleItemStartPlacing(Item obj)
+    {
+        _dialogueTrigger.SetInteractAble(false);
+    }
+
     private void HandleItemPlaced(Item item)
     {
         Destroy(item.gameObject);
-        _dialogueTrigger.DisableOutline();
         _dialogueTrigger.SetInteractAble(false);
         _stateMachine.ChangeState("Leave");
-        CurrencySystem.Increace(200);
+        CurrencySystem.Increace(5);
+        OnGetItem?.Invoke();
     }
 
     public void Complete()
@@ -83,7 +112,7 @@ public class NPC : MonoBehaviour
 
         _completed = true;
         OnComplete?.Invoke();
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
     public bool HasReached(Vector3 target)
@@ -104,6 +133,11 @@ public class NPC : MonoBehaviour
     public bool IsLastPoint()
     {
         return _currentPointIndex + 1 >= _pathPoints.Length;
+    }
+
+    public void ReachDestination()
+    {
+        OnReach?.Invoke();
     }
 }
 
@@ -173,6 +207,7 @@ public class WalkPathState : IState
         {
             if (_npc.IsLastPoint())
             {
+                _npc.ReachDestination();
                 _stateMachine.ChangeState("Wait");
                 return;
             }
@@ -189,22 +224,28 @@ public class WaitState : IState
 {
     private InteractabeDialogueTrigger _trigger;
     private Transform _transform;
+    private Rig _rig;
 
-    public WaitState(InteractabeDialogueTrigger trigger, Transform transform)
+    public WaitState(InteractabeDialogueTrigger trigger, Transform transform, Rig rig)
     {
         _trigger = trigger;
         _transform = transform;
+        _rig = rig;
     }
 
     public void Enter()
     {
         _trigger.SetInteractAble(true);
         _transform.DORotateQuaternion(Quaternion.identity, 1);
+        DOTween.To(() => _rig.weight, x => _rig.weight = x, 1f, 2f);
     }
 
     public void Update() { }
 
-    public void Exit() { }
+    public void Exit()
+    {
+        DOTween.To(() => _rig.weight, x => _rig.weight = x, 0f, 2f);
+    }
 }
 
 public class LeaveState : IState

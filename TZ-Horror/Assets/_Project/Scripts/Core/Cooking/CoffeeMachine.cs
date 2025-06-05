@@ -19,6 +19,7 @@ public class CoffeeMachine : MonoBehaviour
     private Item _lid;
 
     public event Action OnPour;
+    public event Action OnComplete;
 
     private void Awake()
     {
@@ -61,16 +62,28 @@ public class CoffeeMachine : MonoBehaviour
         if (coffee.TryGetComponent(out Rigidbody rigidbody))
             rigidbody.useGravity = false;
 
-        DestroyIfValid(_cup);
-        DestroyIfValid(_capsule);
-        DestroyIfValid(_lid);
+        _effect.SetActive(false);
+
 
         _cupPlacement.ResetZone();
         _capsulePlacement.ResetZone();
-        _lidPlacement.ResetZone();
+        StartCoroutine(DelayedReset(_lidPlacement, false));
+
+        _cup = null;
+        _capsule = null;
+        _lid = null;
 
         _lidPlacement.SetInteractAble(false);
         _isReady = false;
+
+
+        OnComplete?.Invoke();
+    }
+
+    private IEnumerator DelayedReset(ItemPlacementZone zone, bool resetInteraction)
+    {
+        yield return null;
+        zone.ResetZone(resetInteraction);
     }
 
     private void HandleBrewButtonPress()
@@ -90,17 +103,17 @@ public class CoffeeMachine : MonoBehaviour
 
         yield return new WaitForSeconds(_pourDuration);
 
-        _effect.SetActive(false);
         _isPouring = false;
         _isReady = true;
 
-        _lidPlacement.ResetZone();
         _lidPlacement.SetInteractAble(true);
     }
 
     private void DestroyIfValid(Item item)
     {
         if (item != null && item.gameObject != null)
-            Destroy(item.gameObject);
+        {
+            item.gameObject.SetActive(false);
+        }
     }
 }

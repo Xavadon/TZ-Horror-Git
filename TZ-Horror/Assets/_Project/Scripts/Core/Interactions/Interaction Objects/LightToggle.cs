@@ -1,12 +1,15 @@
 ﻿using QuickOutline;
 using UnityEngine;
 
-public class LightToggle : MonoBehaviour, IInteractable, IOutlinable
+public class LightToggle : MonoBehaviour, IInteractable
 {
     [SerializeField] private GameObject _light;
 
     private Outline _outline;
     private bool _toggled;
+
+    public string Name => "Toggle Light";
+    public bool IsInteractable => true;
 
     private void Awake()
     {

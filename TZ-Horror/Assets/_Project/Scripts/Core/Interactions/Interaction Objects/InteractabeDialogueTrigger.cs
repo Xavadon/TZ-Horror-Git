@@ -1,24 +1,37 @@
 ﻿using QuickOutline;
 using System;
+using System.Collections;
 using UnityEngine;
 
-public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlinable
+public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable
 {
     [SerializeField] private Outline _outline;
     [SerializeField] private string _dialogueKey = "greeting";
     [SerializeField] private Transform _lookAt;
-    
+    [SerializeField] private bool _outlineable = false;
+
     private float _cooldownAfterDialogue = 0.75f;
     private bool _interactAble = true;
     private bool _onCooldown;
     private Collider _collider;
+    private bool _isOneShot;
+
+    public string Name => _interactAble ? "Talk" : "";
+    public bool IsInteractable => _interactAble;
 
     public event Action OnInteract;
 
     private void Awake()
     {
-        if (_outline == null)
+        if (_outline == null && _outlineable)
+        {
             _outline = GetComponent<Outline>();
+        }
+
+        if (_outline != null)
+        {
+            _outline.enabled = false;
+        }
 
         _collider = GetComponent<Collider>();
     }
@@ -45,26 +58,33 @@ public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlina
         if (!_interactAble || _onCooldown)
             return;
 
-        if (_lookAt == null)
-            _lookAt = transform;
-
         NewDialogueSystem.DialogueSystem.StartDialogue(_dialogueKey, _lookAt);
         DisableOutline();
         SetInteractAble(false);
         OnInteract?.Invoke();
     }
 
-    private void HandleDialogueEnd(string _)
+    private void HandleDialogueEnd(string key)
     {
-        StartCooldown();
+        if (_isOneShot)
+        {
+            return;
+        }
+
+        StartCoroutine(CooldownCoroutine());
     }
 
-    private async void StartCooldown()
+    private IEnumerator CooldownCoroutine()
     {
         _onCooldown = true;
-        await System.Threading.Tasks.Task.Delay((int)(_cooldownAfterDialogue * 1000f));
+        yield return new WaitForSeconds(_cooldownAfterDialogue);
         _onCooldown = false;
         SetInteractAble(true);
+    }
+
+    public void SetOneShot(bool value)
+    {
+        _isOneShot = value;
     }
 
     public void SetInteractAble(bool value)
@@ -75,21 +95,32 @@ public class InteractabeDialogueTrigger : MonoBehaviour, IInteractable, IOutlina
             _collider = GetComponent<Collider>();
 
         _collider.enabled = value;
+        DisableOutline();
     }
 
     public void DisableOutline()
     {
+        if (!_outlineable)
+        {
+            return;
+        }
+
         if (_outline != null)
         {
-            _outline.SetOutlineWidth(0);
+            _outline.enabled = false;
         }
     }
 
     public void EnableOutline()
     {
+        if (!_outlineable)
+        {
+            return;
+        }
+
         if (_interactAble)
         {
-            _outline.SetOutlineWidth(3);
+            _outline.enabled = true;
         }
         else
         {

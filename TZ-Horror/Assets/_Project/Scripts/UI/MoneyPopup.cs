@@ -9,6 +9,7 @@ public class MoneyPopup : MonoBehaviour
     [SerializeField] private TMP_Text _popupText;
     [SerializeField] private float _moveUpDistance = 50f;
     [SerializeField] private float _fadeDuration = 1f;
+    [SerializeField] private AudioSource _audioSource;
 
     private RectTransform _rectTransform;
     private CanvasGroup _canvasGroup;
@@ -41,6 +42,8 @@ public class MoneyPopup : MonoBehaviour
 
     private IEnumerator AnimatePopup()
     {
+        _audioSource.Play();
+
         float elapsedTime = 0f;
         Vector2 startPos = _rectTransform.anchoredPosition;
         Vector2 targetPos = startPos + new Vector2(0, _moveUpDistance);

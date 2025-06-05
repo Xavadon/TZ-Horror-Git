@@ -31,8 +31,8 @@ Transform:
   m_GameObject: {fileID: 3878496411721767403}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: 0.46423078, y: 0.08100009, z: 1.8406355}
-  m_LocalScale: {x: 7.36212, y: 7.36212, z: 7.3621197}
+  m_LocalPosition: {x: 0.4642308, y: 0.08100009, z: 1.840636}
+  m_LocalScale: {x: 7.36212, y: 7.36212, z: 7.36212}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7154767199675234918}
@@ -164,7 +164,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   outlineMode: 0
   outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 0
+  outlineWidth: 3
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
@@ -196,8 +196,8 @@ Transform:
   m_GameObject: {fileID: 9219543383209680580}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.016666392}
-  m_LocalScale: {x: 1.0363864, y: 1.0363863, z: 1.0363864}
+  m_LocalPosition: {x: 0, y: 0, z: 0.01666639}
+  m_LocalScale: {x: 1.036386, y: 1.036386, z: 1.036386}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3907499209324649691}

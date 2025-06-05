@@ -8,11 +8,11 @@ namespace NewDialogueSystem
     {
         private static TextAsset _dialogueFile;
         private static DialogueBox _dialogueBox;
-        private static string language = "Ru"; // Выбранный язык (например, "Ru" или "En").
+        private static string language = "En"; // Выбранный язык (например, "Ru" или "En").
 
         private static Dictionary<string, List<string>> _translationDictionary = new Dictionary<string, List<string>>();
 
-        public static event Action<string, Transform> OnDialogueStart;
+        public static event Action<string, Transform, float> OnDialogueStart;
         public static event Action<string> OnDialogueFinished;
 
         public static void Construct(TextAsset dialogues, DialogueBox dialogueBox)
@@ -47,14 +47,14 @@ namespace NewDialogueSystem
             return new List<string> { "Translation Missing" };
         }
 
-        public static void StartDialogue(string key, Transform speakerTransform = null)
+        public static void StartDialogue(string key, Transform speakerTransform = null, float focusTime = 0.75f)
         {
             if (_translationDictionary.TryGetValue(key, out List<string> sentences))
             {
                 _dialogueBox.TypeDialogue(key, sentences);
                 _dialogueBox.OnDialogueEnd += DialogueEnd;
 
-                OnDialogueStart?.Invoke(key, speakerTransform);
+                OnDialogueStart?.Invoke(key, speakerTransform, focusTime);
             }
             else
             {

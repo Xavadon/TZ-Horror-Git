@@ -8,19 +8,19 @@ public class InteractionHighlighter : MonoBehaviour
     private Camera _mainCamera;
     private ItemInfo _itemInfo;
     private GameObject _currentTarget;
-    private IOutlinable _lastOutlinable;
+    private IInteractable _lastOutlinable;
     private ItemManipulator _itemManipulator;
     private bool _canDetect = true;
 
     private void OnEnable()
     {
-        NewDialogueSystem.DialogueSystem.OnDialogueStart += (_, _) => _canDetect = false;
+        NewDialogueSystem.DialogueSystem.OnDialogueStart += (_, _, _) => _canDetect = false;
         NewDialogueSystem.DialogueSystem.OnDialogueFinished += (_) => _canDetect = true;
     }
 
     private void OnDisable()
     {
-        NewDialogueSystem.DialogueSystem.OnDialogueStart -= (_, _) => _canDetect = false;
+        NewDialogueSystem.DialogueSystem.OnDialogueStart -= (_, _, _) => _canDetect = false;
         NewDialogueSystem.DialogueSystem.OnDialogueFinished -= (_) => _canDetect = true;
     }
 
@@ -70,16 +70,12 @@ public class InteractionHighlighter : MonoBehaviour
 
         _currentTarget = hitObject;
 
-        IOutlinable outlinable = _currentTarget.GetComponent<IOutlinable>();
-
-        if (outlinable == null)
+        if (_currentTarget.TryGetComponent(out IInteractable interactable) && interactable.IsInteractable)
         {
-            return;
+            interactable.EnableOutline();
+            _lastOutlinable = interactable;
+            _itemInfo.UpdateText(interactable.Name);
         }
-
-        outlinable.EnableOutline();
-        _lastOutlinable = outlinable;
-        _itemInfo.UpdateText(hitObject.name);
     }
 
     public void DisableOutline()

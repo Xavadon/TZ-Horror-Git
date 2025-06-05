@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 namespace EvolveGames
@@ -51,9 +52,16 @@ namespace EvolveGames
         private Quaternion _savedCameraRotation;
         private float _savedCameraFOV;
         [SerializeField] private Transform _dialogueFocusTarget;
-        [SerializeField] private float _dialogueFOV = 30.0f;
+        [SerializeField] private float _dialogueFOV = 50.0f;
         [SerializeField] private float _focusDuration = 0.75f;
         private Coroutine _focusRoutine;
+
+        private Transform _speaker;
+
+        public void SetCanMove(bool value)
+        {
+            canMove = value;
+        }
 
         private void OnEnable()
         {
@@ -67,15 +75,27 @@ namespace EvolveGames
             NewDialogueSystem.DialogueSystem.OnDialogueFinished -= OnDialogueFinished;
         }
 
-        private void OnDialogueStart(string _, Transform speaker)
+        private void OnDialogueStart(string _, Transform speaker, float focusTime = 0.75f)
         {
+            if (speaker == null)
+            {
+                canMove = false;
+                return;
+            }
+
             _dialogueFocusTarget = speaker;
             if (_focusRoutine != null) StopCoroutine(_focusRoutine);
-            _focusRoutine = StartCoroutine(FocusOnDialogueTarget());
+            _focusRoutine = StartCoroutine(FocusOnDialogueTarget(focusTime));
         }
 
         private void OnDialogueFinished(string _)
         {
+            if (_dialogueFocusTarget == null)
+            {
+                canMove = true;
+                return;
+            }
+
             _dialogueFocusTarget = null;
             if (_focusRoutine != null) StopCoroutine(_focusRoutine);
             _focusRoutine = StartCoroutine(ResetCameraFocus());
@@ -100,10 +120,10 @@ namespace EvolveGames
         {
             HandleGravity();
             HandleMovement();
-            HandleJump();
+            //HandleJump();
             ApplyMovement();
             HandleRotationAndFOV();
-            HandleCrough();
+            //HandleCrough();
         }
 
         private void HandleGravity()
@@ -191,7 +211,7 @@ namespace EvolveGames
             }
         }
 
-        private IEnumerator FocusOnDialogueTarget()
+        private IEnumerator FocusOnDialogueTarget(float focusTime)
         {
             canMove = false;
 
@@ -199,24 +219,32 @@ namespace EvolveGames
             _savedCameraRotation = _camera.rotation;
             _savedCameraFOV = _cameraComponent.fieldOfView;
 
-            Quaternion targetRotation = Quaternion.LookRotation(_dialogueFocusTarget.position - _camera.position);
+            Vector3 lookDir = _dialogueFocusTarget.position - _camera.position;
+            Quaternion targetCamRot = Quaternion.LookRotation(lookDir);
+            Quaternion targetPlayerRot = Quaternion.Euler(0, targetCamRot.eulerAngles.y, 0);
 
-            float elapsed = 0f;
-            while (elapsed < _focusDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / _focusDuration;
+            float startRotX = _rotationX;
+            float endRotX = targetCamRot.eulerAngles.x;
+            if (endRotX > 180f) endRotX -= 360f;
 
-                _camera.rotation = Quaternion.Slerp(_savedCameraRotation, targetRotation, t);
-                _cameraComponent.fieldOfView = Mathf.Lerp(_savedCameraFOV, _dialogueFOV, t);
+            float rotX = startRotX;
+            DOTween.To(() => rotX, x => rotX = x, endRotX, focusTime)
+                .SetEase(Ease.InOutSine)
+                .OnUpdate(() => {
+                    _rotationX = rotX;
+                    _camera.localRotation = Quaternion.Euler(_rotationX, 0, 0);
+                });
 
-                yield return null;
-            }
+            _camera.DORotateQuaternion(targetCamRot, focusTime).SetEase(Ease.InOutSine);
+            transform.DORotateQuaternion(targetPlayerRot, focusTime).SetEase(Ease.InOutSine);
+            _cameraComponent.DOFieldOfView(_dialogueFOV, focusTime).SetEase(Ease.InOutSine);
+
+            yield return new WaitForSeconds(focusTime);
         }
+
 
         private IEnumerator ResetCameraFocus()
         {
-            Quaternion startRot = _camera.rotation;
             float startFOV = _cameraComponent.fieldOfView;
 
             float elapsed = 0f;
@@ -225,11 +253,13 @@ namespace EvolveGames
                 elapsed += Time.deltaTime;
                 float t = elapsed / _focusDuration;
 
-                _camera.rotation = Quaternion.Slerp(startRot, _savedCameraRotation, t);
                 _cameraComponent.fieldOfView = Mathf.Lerp(startFOV, _savedCameraFOV, t);
 
                 yield return null;
             }
+
+            Quaternion targetrotation = _camera.transform.rotation;
+            //transform.rotation = targetrotation;
 
             canMove = true;
         }

@@ -1,0 +1,8 @@
+Model Information:
+* title:	Coffee Capsule
+* source:	https://sketchfab.com/3d-models/coffee-capsule-7937db4027be4a7dbcfc8749d0acc494
+* author:	tandukuda (https://sketchfab.com/tandukuda)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works

@@ -12,6 +12,7 @@ public class ItemPlacementZone : MonoBehaviour
     private bool _interactable = true;
     private Item _item;
 
+    public event Action<Item> OnItemStartPlacing;
     public event Action<Item> OnItemPlaced;
 
     private void OnTriggerStay(Collider other)
@@ -26,6 +27,7 @@ public class ItemPlacementZone : MonoBehaviour
             StartCoroutine(SmoothSnapItem(item.gameObject));
             _item = item;
             PlayerHandsDropper.DropItem();
+            OnItemStartPlacing?.Invoke(item);
         }
     }
 
@@ -60,11 +62,22 @@ public class ItemPlacementZone : MonoBehaviour
         OnItemPlaced?.Invoke(_item);
     }
 
-    public void ResetZone()
+    public void ResetZone(bool resetInteraction = true)
     {
-        _interactable = true;
+        Debug.Log($"[DESTROY] Item name: {_item.gameObject.name} null:{_item == null}");
+
+        if (_item != null)
+        {
+            Destroy(_item.gameObject);
+            _item = null;
+        }
+
+        if (resetInteraction)
+        {
+            _interactable = true;
+        }
+
         _isOccupied = false;
-        _item = null;
     }
 
     public void SetInteractAble(bool value)

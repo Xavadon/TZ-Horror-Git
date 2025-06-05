@@ -4,15 +4,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InteractabeButton : MonoBehaviour, IInteractable, IOutlinable
+public class InteractabeButton : MonoBehaviour, IInteractable
 {
+    [SerializeField] private string _interactionName = "Complete Coffee";
+
     private Outline _outline;
+
+    public string Name => _interactionName;
+
+    public bool IsInteractable => true;
 
     public event Action OnPress;
 
     private void Awake()
     {
         _outline = GetComponent<Outline>();
+        _outline.enabled = false;
     }
 
     public void Interact()
@@ -23,11 +30,11 @@ public class InteractabeButton : MonoBehaviour, IInteractable, IOutlinable
 
     public void DisableOutline()
     {
-        _outline.SetOutlineWidth(0);
+        _outline.enabled = false;
     }
 
     public void EnableOutline()
     {
-        _outline.SetOutlineWidth(3);
+        _outline.enabled = true;
     }
 }

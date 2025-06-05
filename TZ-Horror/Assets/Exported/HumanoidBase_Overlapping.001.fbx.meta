@@ -3,7 +3,12 @@ guid: 98e8b1a2cffeb7b44801361aed05686c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Humanoid_OverlappingPSXFoodInspectorHair
+    second: {fileID: 2100000, guid: 36d16127ef69bce4c81ec900080efdbd, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
